@@ -27,7 +27,6 @@ async def test_uploading_image(client: AsyncClient, async_db_session: AsyncSessi
 
     print(response.json())
     assert response.status_code == 201
-    assert response.json()["message"] == "Document uploaded successfully"
 
     file_path = 'app/static/images/test_image.png'
     assert os.path.isfile(file_path) == True

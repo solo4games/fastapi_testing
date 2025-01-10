@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import model_validator, Field, ConfigDict
+from pydantic import model_validator, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 

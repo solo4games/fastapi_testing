@@ -16,6 +16,24 @@ router = APIRouter(tags=["Documents"])
 
 @router.post("/upload_doc")
 async def upload_document(file: UploadFile, session: AsyncSession = Depends(get_session)) -> JSONResponse:
+    """
+        Загрузка документа на сервер.
+
+        Этот эндпоинт позволяет пользователям загружать файл документа, который
+        сохраняется в указанном пути и записывается в базу данных.
+
+        Аргументы:
+            file (UploadFile): Загружаемый файл.
+            session (AsyncSession): Зависимость для работы с базой данных.
+
+        Возвращает:
+            JSONResponse: Сообщение об успешной загрузке с ID документа, если загрузка прошла успешно.
+
+        Возможные статус-коды:
+            - 201 Created: Документ успешно загружен.
+            - 500 Internal Server Error: Ошибка при обработке файла или сохранении в базе данных.
+    """
+
     path = DocumentDAO.parse_document_path(file)
     doc_obj = Documents(path=path)
     session.add(doc_obj)
@@ -30,6 +48,24 @@ async def upload_document(file: UploadFile, session: AsyncSession = Depends(get_
 
 @router.delete("/doc_delete")
 async def delete_document(file_id: int, session: AsyncSession = Depends(get_session)) -> JSONResponse:
+    """
+        Удаление документа по его ID.
+
+        Этот эндпоинт удаляет документ из базы данных и удаляет
+        соответствующий файл из файловой системы.
+
+        Аргументы:
+            file_id (int): ID документа, который нужно удалить.
+            session (AsyncSession): Зависимость для работы с базой данных.
+
+        Возвращает:
+            JSONResponse: Сообщение об успешном удалении документа.
+
+        Возможные статус-коды:
+            - 200 OK: Документ успешно удалён.
+            - 500 Internal Server Error: Ошибка при удалении файла или сохранении изменений в базе данных.
+    """
+
     query = delete(Documents).where(Documents.id == file_id).returning(Documents.path)
     deleted_document = await session.execute(query)
     path = deleted_document.fetchone().path
@@ -44,6 +80,25 @@ async def delete_document(file_id: int, session: AsyncSession = Depends(get_sess
 
 @router.post("/doc_analyze")
 async def analyze_document(file_id: int, session: AsyncSession = Depends(get_session)) -> JSONResponse:
+    """
+      Анализ документа по его ID.
+
+      Этот эндпоинт выполняет анализ содержимого документа и сохраняет
+      результаты анализа в базе данных.
+
+      Аргументы:
+          file_id (int): ID документа, который нужно проанализировать.
+          session (AsyncSession): Зависимость для работы с базой данных.
+
+      Возвращает:
+          JSONResponse: Сообщение об успешном выполнении анализа.
+
+      Возможные статус-коды:
+          - 200 OK: Анализ успешно завершён.
+          - 404 Not Found: Документ с указанным ID не найден.
+          - 500 Internal Server Error: Ошибка при сохранении результатов анализа в базе данных.
+    """
+
     document_dao = DocumentDAO(session)
 
     doc = await document_dao.find_one_or_none(id=file_id)
@@ -62,6 +117,23 @@ async def analyze_document(file_id: int, session: AsyncSession = Depends(get_ses
 
 @router.get("/get_text")
 async def get_text(file_id: int, session: AsyncSession = Depends(get_session)) -> JSONResponse:
+    """
+    Получение текста анализа документа по его ID.
+
+    Этот эндпоинт извлекает текст анализа документа из базы данных.
+
+    Аргументы:
+        file_id (int): ID документа, текст которого нужно получить.
+        session (AsyncSession): Зависимость для работы с базой данных.
+
+    Возвращает:
+        JSONResponse: Текст анализа документа.
+
+    Возможные статус-коды:
+        - 200 OK: Текст успешно получен.
+        - 404 Not Found: Текст анализа документа не найден.
+    """
+
     document_text_dao = DocumentTextDAO(session)
     text = await document_text_dao.find_one_or_none(id_doc=file_id)
     if not text:
