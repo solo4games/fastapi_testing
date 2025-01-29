@@ -1,8 +1,12 @@
 volumes:
   shared_images:
-    driver: local
+
   shared_data:
-    driver: local
+
+
+networks:
+  shared_network:
+    name: 'project_shared_network'
 
 services:
 
@@ -20,6 +24,8 @@ services:
       - shared_images:/FastApiProject/app/static/images
     ports:
       - "9000:8000"
+    networks:
+      - shared_network
 
 
   db:
@@ -36,6 +42,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - shared_network
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -52,6 +60,8 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    networks:
+      - shared_network
 
 
   celery:
@@ -68,3 +78,5 @@ services:
         condition: service_healthy
       db:
         condition: service_healthy
+    networks:
+      - shared_network
