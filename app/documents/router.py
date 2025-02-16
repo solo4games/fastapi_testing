@@ -135,8 +135,8 @@ async def get_text(file_id: int, session: AsyncSession = Depends(get_session)) -
     """
 
     document_text_dao = DocumentTextDAO(session)
-    text = await document_text_dao.find_one_or_none(id_doc=file_id)
+    text = await document_text_dao.find_document_text(file_id)
     if not text:
         raise HTTPException(status_code=404, detail="Document text not found")
     return JSONResponse(status_code=status.HTTP_200_OK,
-                            content={"text": text.text})
+                            content={"text": text[0].text})

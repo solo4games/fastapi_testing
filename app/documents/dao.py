@@ -2,6 +2,7 @@ import shutil
 import os.path
 
 from fastapi import UploadFile, status, HTTPException
+from sqlalchemy import select
 
 from app.dao.dao import BaseDAO
 from app.documents.models import Documents, DocumentsText
@@ -24,4 +25,9 @@ class DocumentDAO(BaseDAO):
 
 class DocumentTextDAO(BaseDAO):
     model = DocumentsText
+
+    async def find_document_text(self, file_id: int):
+        query = select(self.model).filter_by(id_doc=file_id)
+        result = await self.session.execute(query)
+        return result.first()
 

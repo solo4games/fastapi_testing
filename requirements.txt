@@ -66,3 +66,5 @@ vine==5.1.0
 watchfiles==1.0.3
 wcwidth==0.2.13
 websockets==14.1
+kafka-python==2.0.2
+kafka-python-ng==2.2.3
