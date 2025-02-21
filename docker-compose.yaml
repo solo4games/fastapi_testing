@@ -7,6 +7,8 @@ volumes:
 networks:
   shared_network:
     name: 'project_shared_network'
+  shared_network2:
+    name: 'django_shared_network'
 
 services:
 
@@ -44,6 +46,7 @@ services:
       retries: 5
     networks:
       - shared_network
+      - shared_network2
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
